@@ -125,10 +125,10 @@ function LoadTable() {
         $.each(data.events, function () {
             var eventName = events.Get(this.event_id);
             var eventWiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + eventName.substring(0, eventName.length - 1);
-            $('#content').append($("<tr class='" + this.state + "'>" +
-                "<td><a href='" + eventWiki + "' target='_blank'>" + events.Get(this.event_id) + "</a></td>" +
-                "<td>" + this.state + "</td>" +
-                "</tr"));
+            $('#content').append($('<tr class="' + this.state + '">' +
+                '<td><a href="' + encodeURI(eventWiki) + '" target="_blank">' + events.Get(this.event_id) + '</a></td>' +
+                '<td>' + this.state + '</td>' +
+                '</tr>'));
         });
 
         if (intervalId == null)
