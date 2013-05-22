@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=10" />
+    <title>GW2 Active Events</title>
+    <link type="text/css" rel="stylesheet" href="Content/style.css" />
+</head>
+    <body>
+        <div>
+            <span>Server:</span>
+            <select id="slctWorld"></select>
+            <span>Map:</span>
+            <select id="slctMap"></select>
+            <div>
+                <a id="autoUrl" style="display:none;"></a>
+            </div>
+        </div>
+        <div>
+            <table>
+                <colgroup>
+                    <col />
+                    <col />
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th>Event Name</th>
+                        <th>Status</th>
+                    </tr>
+                </tbody>
+                <tbody id="content" />
+            </table>
+        </div>
+
+        <script type="text/javascript" src="Scripts/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="Scripts/scripts.js"></script>
+    </body>
+</html>
