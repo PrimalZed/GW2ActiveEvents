@@ -15,19 +15,19 @@ tr.Warmup
 
 td.event-name
 {
-    background-image: url('../Content/Images/event_star.png');
+    background-image: url('Images/event_star.png');
     padding-left: 25px;
     background-repeat: no-repeat;
 }
 
 td.skill
 {
-    background-image: url('../Content/Images/skill_point.png');
+    background-image: url('Images/skill_point.png');
 }
 
 td.group-event
 {
-    background-image: url('../Content/Images/event_boss.png');
+    background-image: url('Images/event_boss.png');
 }
 
 
