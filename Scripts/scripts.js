@@ -35,7 +35,7 @@ $(document).ready(function () {
 
     var rate = getURLParameter('rate');
     if (rate != null && isNaN(rate) == false)
-        intervalLength = Math.min(rate, 1000);
+        intervalLength = Math.max(rate, 1000);
 
     $.getJSON(worldNamesUri, function (data) {
         data.sort(function (a, b) {
@@ -123,19 +123,37 @@ function LoadTable() {
         })
 
         $.each(data.events, function () {
+            // get event name
             var eventName = events.Get(this.event_id);
-            var eventWiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + eventName.substring(0, eventName.length - 1);
+            var cssClass = 'event-name';
+
+            // check for Skill Challenge
+            var skill = "Skill Challenge: ";
+            if (eventName.slice(0, skill.length) == skill) {
+                eventName = eventName.substring(skill.length, eventName.length);
+                cssClass += ' skill';
+            }
+
+            // get wiki link
+            var eventWiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + eventName;
+            if (eventWiki.substr(eventWiki.length - 1) == '.')
+                eventWiki = eventWiki.substring(0, eventWiki.length - 1);
+
+            // check for group event
             var groupEvent = '';
-            if ($.inArray(this.event_id, groupevents) != -1)
-                groupEvent = '[Group] ';
+            if ($.inArray(this.event_id, groupevents) != -1) {
+                eventName = '[Group] ' + eventName;
+                cssClass += ' group-event';
+            }
+
             $('#content').append($('<tr class="' + this.state + '">' +
-                '<td><a href="' + encodeURI(eventWiki) + '" target="_blank">' + groupEvent + eventName + '</a></td>' +
+                '<td class="' + cssClass + '"><a href="' + encodeURI(eventWiki) + '" target="_blank">' + eventName + '</a></td>' +
                 '<td>' + this.state + '</td>' +
                 '</tr>'));
         });
 
-        if (intervalId == null)
-            intervalId = setInterval(function () { LoadTable(); }, intervalLength);
+        //if (intervalId == null)
+        //    intervalId = setInterval(function () { LoadTable(); }, intervalLength);
     });
 }
 
