@@ -152,8 +152,8 @@ function LoadTable() {
                 '</tr>'));
         });
 
-        //if (intervalId == null)
-        //    intervalId = setInterval(function () { LoadTable(); }, intervalLength);
+        if (intervalId == null)
+            intervalId = setInterval(function () { LoadTable(); }, intervalLength);
     });
 }
 
