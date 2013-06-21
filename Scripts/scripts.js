@@ -97,10 +97,12 @@ function StateOrder(state) {
             return 2;
         case "Warmup":
             return 3;
-        case "Success":
+        case "Inactive":
             return 4;
-        case "Fail":
+        case "Success":
             return 5;
+        case "Fail":
+            return 6;
     }
 }
 
