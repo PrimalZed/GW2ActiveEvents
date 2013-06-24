@@ -11,3 +11,21 @@
 .leaflet-container {
     background: #000;
 }
+.leaflet-div-icon
+{
+    background-color: transparent;
+    border: none;
+    font-family: "menomonia";
+    font-size: 16px;
+    text-shadow: 
+    -1px -1px 0 #000,
+    1px -1px 0 #000,
+    -1px 1px 0 #000,
+    1px 1px 0 #000;  
+    color: white;
+    cursor: -webkit-grab;
+}
+.legend, .leaflet-control-layers-selector
+{
+    vertical-align: middle;
+}
