@@ -72,7 +72,7 @@ $(document).ready(function () {
 
 });
 
-// Layers
+// Layers global
 var poiGroup = L.layerGroup(),
     waypointGroup = L.layerGroup(),
     vistaGroup = L.layerGroup(),
