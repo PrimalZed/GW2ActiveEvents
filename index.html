@@ -5,35 +5,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=10" />
     <title>GW2 Active Events</title>
     <link type="text/css" rel="stylesheet" href="Content/style.css" />
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.css" />
+    <!--[if lte IE 8]>
+        <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.5/leaflet.ie.css" />
+    <![endif]-->
 </head>
     <body>
         <div>
             <span>Server:</span>
             <select id="slctWorld"></select>
-            <span>Map:</span>
-            <select id="slctMap"></select>
             <div>
                 <a id="autoUrl" style="display:none;"></a>
             </div>
         </div>
-        <div>
-            <table>
-                <colgroup>
-                    <col />
-                    <col />
-                </colgroup>
-                <tbody>
-                    <tr>
-                        <th>Event Name</th>
-                        <th>Status</th>
-                    </tr>
-                </tbody>
-                <tbody id="content" />
-            </table>
-        </div>
-
+        <div id="map"></div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="http://cdn.leafletjs.com/leaflet-0.5/leaflet.js"></script>
         <script type="text/javascript" src="Scripts/scripts.js"></script>
-        <script type="text/javascript" src="Scripts/group_events.js"></script>
     </body>
 </html>
