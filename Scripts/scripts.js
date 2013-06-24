@@ -192,7 +192,7 @@ function PositionChanged(e) {
     }
     
     // Load skill challenges
-    for (i = 0; i < map.skill_challenges.length; i++) {
+    for (i = 0; i < mapobj.skill_challenges.length; i++) {
         skillGroup.addLayer(L.marker(unproject(mapobj.skill_challenges[i].coord), { icon: skillPointIcon }));
     }
 
