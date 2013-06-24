@@ -77,11 +77,13 @@ var poiGroup = L.layerGroup(),
     waypointGroup = L.layerGroup(),
     vistaGroup = L.layerGroup(),
     heartGroup = L.layerGroup(),
+    skillGroup = L.layerGroup(),
     eventGroup = L.layerGroup(),
     eventPrepGroup = L.layerGroup();
 var poiIcon = L.icon({ iconUrl: 'Content/Images/poi.png' }),
     waypointIcon = L.icon({ iconUrl: 'Content/Images/waypoint.png' }),
     vistaIcon = L.icon({ iconUrl: 'Content/Images/vista.png' }),
+    //heartIcon = L.icon({ iconUrl: 'Content/Images/heart.png' }),
     eventBossIcon = L.icon({ iconUrl: 'Content/Images/event_boss32.png' }),
     eventBossIconGrey = L.icon({ iconUrl: 'Content/Images/event_boss_grey.png' }),
     eventStarIcon = L.icon({ iconUrl: 'Content/Images/event_star.png', iconSize: [30, 30] }),
@@ -92,6 +94,7 @@ var icons = {
     poi: poiIcon,
     waypoint: waypointIcon,
     vista: vistaIcon,
+    //heart: heartIcon,
     event: eventStarIcon,
     eventPrep: eventStarIconGrey,
     eventGroup: eventBossIcon,
@@ -121,7 +124,8 @@ function LoadMap(dims) {
         "Points of Interest": poiGroup,
         "Waypoints": waypointGroup,
         "Vistas": vistaGroup,
-        // "Renown Hearts": heartGroup,
+        //"Renown Hearts": heartGroup,
+        "Skill Challenges": skillGroup,
         "Active Events": eventGroup,
         "Preparation Events": eventPrepGroup
     };
@@ -131,6 +135,7 @@ function LoadMap(dims) {
     waypointGroup.addTo(map);
     // vistaGroup.addTo(map);
     // heartGroup.addTo(map);
+    // skillGroup.addTo(map);
     eventGroup.addTo(map);
     eventPrepGroup.addTo(map);
 }
@@ -173,6 +178,23 @@ function PositionChanged(e) {
                 break;
         }
     }
+    
+    // Load hearts
+    for (i = 0; i < mapobj.tasks.length; i++) {
+        var task = mapobj.tasks[i];
+        var wiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + task.objective;
+        if (wiki.substr(wiki.length - 1) == '.')
+            wiki = wiki.substring(0, wiki.length - 1);
+        var name = task.objective + "(" + task.level + ")";
+        //heartGroup.addLayer(L.marker(unproject(task.coord), { title: name, icon: heartIcon })
+        //    .bindPopup('<a href="' + encodeURI(wiki) + '" target="_blank">' + task.objective + '</a>')
+        //);
+    }
+    
+    // Load skill challenges
+    for (i = 0; i < map.skill_challenges.length; i++) {
+        skillGroup.addLayer(L.marker(unproject(mapobj.skill_challenges[i].coord), { icon: skillPointIcon }));
+    }
 
     LoadEvents();
 }
@@ -182,6 +204,7 @@ function ClearAllLayers() {
     waypointGroup.clearLayers();
     vistaGroup.clearLayers();
     heartGroup.clearLayers();
+    skillGroup.clearLayers();
     StopEvents();
 }
 
@@ -208,6 +231,7 @@ function LoadEvents() {
 
     if (worldId == null || currentMap == null) {
         eventGroup.clearLayers();
+        eventPrepGroup.clearLayers();
         clearInterval(intervalId);
         intervalId = null;
         return;
@@ -215,6 +239,7 @@ function LoadEvents() {
 
     $.getJSON(eventsUri + "?world_id=" + worldId + "&map_id=" + currentMap.id, function (data) {
         eventGroup.clearLayers();
+        eventPrepGroup.clearLayers();
 
         for(var i = 0; i < data.events.length; i++) {
             if (data.events[i].state != "Active" && data.events[i].state != "Preparation")
