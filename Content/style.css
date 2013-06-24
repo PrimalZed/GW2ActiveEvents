@@ -1,33 +1,13 @@
-﻿tr.Active
+﻿body, html
 {
-    background-color: #8BE87E;
+    height: 98% !important;
 }
-
-tr.Preparation
+#map
 {
-    background-color: #D3FF82
+    min-height: 95%;
+    height: auto !important;
+    width: auto;
 }
-
-tr.Warmup
-{
-    background-color: #FCFF92;
+.leaflet-container {
+    background: #000;
 }
-
-td.event-name
-{
-    background-image: url('Images/event_star.png');
-    padding-left: 25px;
-    background-repeat: no-repeat;
-}
-
-td.skill
-{
-    background-image: url('Images/skill_point.png');
-}
-
-td.group-event
-{
-    background-image: url('Images/event_boss.png');
-}
-
-
