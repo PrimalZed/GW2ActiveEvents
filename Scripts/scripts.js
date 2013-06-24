@@ -76,15 +76,15 @@ var poiGroup = L.layerGroup(),
     heartGroup = L.layerGroup(),
     eventGroup = L.layerGroup(),
     eventPrepGroup = L.layerGroup();
-var poiIcon = L.icon({ iconUrl: '../Content/Images/poi.png' }),
-    waypointIcon = L.icon({ iconUrl: '../Content/Images/waypoint.png' }),
-    vistaIcon = L.icon({ iconUrl: '../Content/Images/vista.png' }),
-    eventBossIcon = L.icon({ iconUrl: '../Content/Images/event_boss.png' }),
-    eventBossIconGrey = L.icon({ iconUrl: '../Content/Images/event_boss_grey.png' }),
-    eventStarIcon = L.icon({ iconUrl: '../Content/Images/event_star.png' }),
-    eventStarIconGrey = L.icon({ iconUrl: '../Content/Images/event_star_grey.png' }),
-    skillPointIcon = L.icon({ iconUrl: '../Content/Images/skill_point.png' });
-    skillPointIconGrey = L.icon({ iconUrl: '../Content/Images/skill_point_grey.png' });
+var poiIcon = L.icon({ iconUrl: 'Content/Images/poi.png' }),
+    waypointIcon = L.icon({ iconUrl: 'Content/Images/waypoint.png' }),
+    vistaIcon = L.icon({ iconUrl: 'Content/Images/vista.png' }),
+    eventBossIcon = L.icon({ iconUrl: 'Content/Images/event_boss.png' }),
+    eventBossIconGrey = L.icon({ iconUrl: 'Content/Images/event_boss_grey.png' }),
+    eventStarIcon = L.icon({ iconUrl: 'Content/Images/event_star.png' }),
+    eventStarIconGrey = L.icon({ iconUrl: 'Content/Images/event_star_grey.png' }),
+    skillPointIcon = L.icon({ iconUrl: 'Content/Images/skill_point.png' });
+    skillPointIconGrey = L.icon({ iconUrl: '.Content/Images/skill_point_grey.png' });
 var icons = {
     poi: poiIcon,
     waypoint: waypointIcon,
@@ -212,6 +212,7 @@ function LoadEvents() {
 
     $.getJSON(eventsUri + "?world_id=" + worldId + "&map_id=" + currentMap.id, function (data) {
         eventGroup.clearLayers();
+        eventPrepGroup.clearLayers();
 
         for(var i = 0; i < data.events.length; i++) {
             if (data.events[i].state != "Active" && data.events[i].state != "Preparation")
