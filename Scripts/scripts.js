@@ -16,7 +16,7 @@ map_floor.GetMapByCenter = function (point) {
         for (var mapId in region.maps) {
             var rect = region.maps[mapId].continent_rect
             if (point.x > rect[0][0] && point.x < rect[1][0] && point.y > rect[0][1] && point.y < rect[1][1]) {
-                return $.extend({id: mapId}, region.maps[mapId]);
+                return $.extend({ id: mapId }, region.maps[mapId]);
             }
         }
     }
@@ -49,6 +49,7 @@ $(document).ready(function () {
 
         $('#slctWorld').change(function () {
             UpdateAutoUrl();
+            LoadEvents();
         });
 
         var worldId = getURLParameter('world_id');
@@ -57,8 +58,9 @@ $(document).ready(function () {
         }
 
         UpdateAutoUrl();
+        LoadEvents();
     });
-    
+
     // Load event data
     $.getJSON(eventDetailsUri, function (data) {
         events = $.extend(events, data.events);
@@ -70,25 +72,30 @@ $(document).ready(function () {
 
 });
 
-var poiGroup = L.layerGroup(),
+// Layers global
+var sectorGroup = L.layerGroup(),
+    poiGroup = L.layerGroup(),
     waypointGroup = L.layerGroup(),
     vistaGroup = L.layerGroup(),
     heartGroup = L.layerGroup(),
+    skillGroup = L.layerGroup(),
     eventGroup = L.layerGroup(),
     eventPrepGroup = L.layerGroup();
 var poiIcon = L.icon({ iconUrl: 'Content/Images/poi.png' }),
     waypointIcon = L.icon({ iconUrl: 'Content/Images/waypoint.png' }),
     vistaIcon = L.icon({ iconUrl: 'Content/Images/vista.png' }),
-    eventBossIcon = L.icon({ iconUrl: 'Content/Images/event_boss.png' }),
+    heartIcon = L.icon({ iconUrl: 'Content/Images/renown_heart.png' }),
+    eventBossIcon = L.icon({ iconUrl: 'Content/Images/event_boss32.png' }),
     eventBossIconGrey = L.icon({ iconUrl: 'Content/Images/event_boss_grey.png' }),
-    eventStarIcon = L.icon({ iconUrl: 'Content/Images/event_star.png' }),
+    eventStarIcon = L.icon({ iconUrl: 'Content/Images/event_star32.png' }),
     eventStarIconGrey = L.icon({ iconUrl: 'Content/Images/event_star_grey.png' }),
     skillPointIcon = L.icon({ iconUrl: 'Content/Images/skill_point.png' });
-    skillPointIconGrey = L.icon({ iconUrl: '.Content/Images/skill_point_grey.png' });
+skillPointIconGrey = L.icon({ iconUrl: 'Content/Images/skill_point_grey.png' });
 var icons = {
     poi: poiIcon,
     waypoint: waypointIcon,
     vista: vistaIcon,
+    //heart: heartIcon,
     event: eventStarIcon,
     eventPrep: eventStarIconGrey,
     eventGroup: eventBossIcon,
@@ -115,12 +122,14 @@ function LoadMap(dims) {
     map.on("moveend", PositionChanged);
 
     var overlayMaps = {
-        "Points of Interest": poiGroup,
-        "Waypoints": waypointGroup,
-        "Vistas": vistaGroup,
-        // "Renown Hearts": heartGroup,
-        "Active Events": eventGroup,
-        "Preparation Events": eventPrepGroup
+        "Sectors": sectorGroup,
+        "<img class='legend' src='Content/Images/poi.png'/><span class='legend'>Points of Interest</span>": poiGroup,
+        "<img class='legend' src='Content/Images/waypoint.png'/><span class='legend'>Waypoints</span>": waypointGroup,
+        "<img class='legend' src='Content/Images/vista.png'/><span class='legend'>Vistas</span>": vistaGroup,
+        "<img class='legend' src='Content/Images/renown_heart.png'/><span class='legend'>Renown Hearts</span>": heartGroup,
+        "<img class='legend' src='Content/Images/skill_point.png'/><span class='legend'>Skill Challenges</span>": skillGroup,
+        "<img class='legend' src='Content/Images/event_star.png'/><span class='legend'>Events (Active)</span>": eventGroup,
+        "<img class='legend' src='Content/Images/event_star_grey.png'/><span class='legend'>Events (Preparation)</span>": eventPrepGroup
     };
 
     L.control.layers(null, overlayMaps).addTo(map);
@@ -128,6 +137,7 @@ function LoadMap(dims) {
     waypointGroup.addTo(map);
     // vistaGroup.addTo(map);
     // heartGroup.addTo(map);
+    // skillGroup.addTo(map);
     eventGroup.addTo(map);
     eventPrepGroup.addTo(map);
 }
@@ -171,14 +181,41 @@ function PositionChanged(e) {
         }
     }
 
+    // Load hearts
+    for (i = 0; i < mapobj.tasks.length; i++) {
+        var task = mapobj.tasks[i];
+        var wiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + task.objective;
+        if (wiki.substr(wiki.length - 1) == '.')
+            wiki = wiki.substring(0, wiki.length - 1);
+        var name = task.objective + " (" + task.level + ")";
+        heartGroup.addLayer(L.marker(unproject(task.coord), { title: name, icon: heartIcon })
+            .bindPopup('<a href="' + encodeURI(wiki) + '" target="_blank">' + name + '</a>')
+        );
+    }
+
+    // Load skill challenges
+    for (i = 0; i < mapobj.skill_challenges.length; i++) {
+        skillGroup.addLayer(L.marker(unproject(mapobj.skill_challenges[i].coord), { icon: skillPointIcon }));
+    }
+    
+    // Load Sectors
+    for (i = 0; i < mapobj.sectors.length; i++) {
+        var sector = mapobj.sectors[i];
+        var sectorName = sector.name + ' (' + sector.level + ')';
+        var sectorIcon = L.divIcon({ html: '<em>' + sectorName + '</em>', iconSize: [200, 18] });
+        sectorGroup.addLayer(L.marker(unproject(sector.coord), { icon: sectorIcon, clickable: false, opacity: 0.7, zIndexOffset: -1000 }));
+    }
+
     LoadEvents();
 }
 
 function ClearAllLayers() {
+    sectorGroup.clearLayers();
     poiGroup.clearLayers();
     waypointGroup.clearLayers();
     vistaGroup.clearLayers();
     heartGroup.clearLayers();
+    skillGroup.clearLayers();
     StopEvents();
 }
 
@@ -205,6 +242,7 @@ function LoadEvents() {
 
     if (worldId == null || currentMap == null) {
         eventGroup.clearLayers();
+        eventPrepGroup.clearLayers();
         clearInterval(intervalId);
         intervalId = null;
         return;
@@ -214,7 +252,7 @@ function LoadEvents() {
         eventGroup.clearLayers();
         eventPrepGroup.clearLayers();
 
-        for(var i = 0; i < data.events.length; i++) {
+        for (var i = 0; i < data.events.length; i++) {
             if (data.events[i].state != "Active" && data.events[i].state != "Preparation")
                 continue;
 
@@ -244,6 +282,8 @@ function LoadEvents() {
                 cssClass += ' group-event';
                 icon = "eventGroup";
             }
+
+            eventName = eventName + " (" + event.level + ")";
 
             // check if event is in preparation stage
             if (data.events[i].state == "Preparation") {
