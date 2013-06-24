@@ -1,4 +1,4 @@
-var eventsUri = "https://api.guildwars2.com/v1/events.json";
+﻿var eventsUri = "https://api.guildwars2.com/v1/events.json";
 var worldNamesUri = "https://api.guildwars2.com/v1/world_names.json";
 var mapNamesUri = "https://api.guildwars2.com/v1/map_names.json";
 var mapTilesUri = "https://tiles.guildwars2.com/1/1/{z}/{x}/{y}.jpg";
@@ -79,14 +79,14 @@ var poiGroup = L.layerGroup(),
     eventGroup = L.layerGroup(),
     eventPrepGroup = L.layerGroup();
 var poiIcon = L.icon({ iconUrl: 'Content/Images/poi.png' }),
-    waypointIcon = L.icon({ iconUrl: '../Content/Images/waypoint.png' }),
-    vistaIcon = L.icon({ iconUrl: '../Content/Images/vista.png' }),
-    eventBossIcon = L.icon({ iconUrl: '../Content/Images/event_boss.png', iconSize: [30, 30] }),
-    eventBossIconGrey = L.icon({ iconUrl: '../Content/Images/event_boss_grey.png' }),
-    eventStarIcon = L.icon({ iconUrl: '../Content/Images/event_star.png', iconSize: [30, 30] }),
-    eventStarIconGrey = L.icon({ iconUrl: '../Content/Images/event_star_grey.png' }),
-    skillPointIcon = L.icon({ iconUrl: '../Content/Images/skill_point.png' });
-    skillPointIconGrey = L.icon({ iconUrl: '../Content/Images/skill_point_grey.png' });
+    waypointIcon = L.icon({ iconUrl: 'Content/Images/waypoint.png' }),
+    vistaIcon = L.icon({ iconUrl: 'Content/Images/vista.png' }),
+    eventBossIcon = L.icon({ iconUrl: 'Content/Images/event_boss32.png' }),
+    eventBossIconGrey = L.icon({ iconUrl: 'Content/Images/event_boss_grey.png' }),
+    eventStarIcon = L.icon({ iconUrl: 'Content/Images/event_star.png', iconSize: [30, 30] }),
+    eventStarIconGrey = L.icon({ iconUrl: 'Content/Images/event_star_grey.png' }),
+    skillPointIcon = L.icon({ iconUrl: 'Content/Images/skill_point.png' });
+    skillPointIconGrey = L.icon({ iconUrl: 'Content/Images/skill_point_grey.png' });
 var icons = {
     poi: poiIcon,
     waypoint: waypointIcon,
