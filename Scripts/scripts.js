@@ -264,11 +264,7 @@ function LoadEvents() {
         }
 
         if (intervalId == null)
-<<<<<<< HEAD
-            intervalId = setInterval(function () { LoadTable(); }, intervalLength);
-=======
             intervalId = setInterval(function () { LoadEvents(); }, intervalLength);
->>>>>>> Remake To Map Service
     });
 }
 
