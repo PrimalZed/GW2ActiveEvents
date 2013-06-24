@@ -204,14 +204,13 @@ function LoadEvents() {
     var worldId = $('#slctWorld').val();
 
     if (worldId == null || currentMap == null) {
-        eventGroup.clearLayers();
-        clearInterval(intervalId);
-        intervalId = null;
+        StopEvents();
         return;
     }
 
     $.getJSON(eventsUri + "?world_id=" + worldId + "&map_id=" + currentMap.id, function (data) {
         eventGroup.clearLayers();
+        eventPrepGroup.clearLayers();
 
         for(var i = 0; i < data.events.length; i++) {
             if (data.events[i].state != "Active" && data.events[i].state != "Preparation")
