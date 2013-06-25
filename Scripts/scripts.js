@@ -8,6 +8,16 @@ var eventDetailsUri = "https://api.guildwars2.com/v1/event_details.json";
 
 var intervalLength = 10000;
 
+var map_names = {
+    a: [],
+    contains: function (id) {
+        for (var i = 0; i < this.a.length; i++) {
+            if (this.a[i].id == id)
+                return true;
+        }
+        return false;
+    }
+};
 var events, map_floor = {};
 map_floor.GetMapByCenter = function (point) {
     var foundMap = null;
@@ -24,7 +34,7 @@ map_floor.GetMapByCenter = function (point) {
 function translateX(x, aMin, aMax, bMin, bMax) { return ((x - aMin) / (aMax - aMin)) * (bMax - bMin) + bMin; }
 function translateY(y, aMin, aMax, bMin, bMax) { return (1 - ((y - aMin) / (aMax - aMin))) * (bMax - bMin) + bMin; }
 function unproject(coord) { return map.unproject(coord, map.getMaxZoom()); }
-function project(latlng) { return map.project(map.getCenter(), map.getMaxZoom()); }
+function project(latlng) { return map.project(latlng, map.getMaxZoom()); }
 
 $(document).ready(function () {
     // Load map data
@@ -32,6 +42,9 @@ $(document).ready(function () {
         map_floor.regions = data.regions;
         map_floor.texture_dims = data.texture_dims;
         LoadMap(data.texture_dims);
+    });
+    $.getJSON(mapNamesUri, function (data) {
+        map_names.a = data;
     });
 
     // Load world (server) data
@@ -73,7 +86,8 @@ $(document).ready(function () {
 });
 
 // Layers global
-var sectorGroup = L.layerGroup(),
+var zoneGroup = L.layerGroup(),
+    sectorGroup = L.layerGroup(),
     poiGroup = L.layerGroup(),
     waypointGroup = L.layerGroup(),
     vistaGroup = L.layerGroup(),
@@ -133,6 +147,7 @@ function LoadMap(dims) {
     };
 
     L.control.layers(null, overlayMaps).addTo(map);
+    zoneGroup.addTo(map);
     // poiGroup.addTo(map);
     waypointGroup.addTo(map);
     // vistaGroup.addTo(map);
@@ -144,13 +159,17 @@ function LoadMap(dims) {
 
 var currentMap = { id: -1 };
 function PositionChanged(e) {
-    mapobj = map_floor.GetMapByCenter(project(map.getCenter));
+    var mapobj = map_floor.GetMapByCenter(project(map.getCenter()));
 
     if (map.getZoom() < 4 || mapobj == null) {
         currentMap.id = -1;
         ClearAllLayers();
         StopEvents();
+        SetZoneLayer();
         return;
+    }
+    else {
+        zoneGroup.clearLayers();
     }
 
 
@@ -201,12 +220,33 @@ function PositionChanged(e) {
     // Load Sectors
     for (i = 0; i < mapobj.sectors.length; i++) {
         var sector = mapobj.sectors[i];
-        var sectorName = sector.name + ' (' + sector.level + ')';
-        var sectorIcon = L.divIcon({ html: '<em>' + sectorName + '</em>', iconSize: [200, 18] });
+        var sectorHtml = '<div><em>' + sector.name + '</em></div>';
+        if (sector.level > 0)
+            sectorHtml += '<div><em>(' + sector.level + ')</em></div>';
+        var sectorIcon = L.divIcon({ html: sectorHtml, iconSize: [200, 32] });
         sectorGroup.addLayer(L.marker(unproject(sector.coord), { icon: sectorIcon, clickable: false, opacity: 0.7, zIndexOffset: -1000 }));
     }
 
     LoadEvents();
+}
+
+function SetZoneLayer() {
+    for (var regionId in map_floor.regions) {
+        var region = map_floor.regions[regionId];
+        for (var mapId in region.maps) {
+            if (map_names.contains(mapId) == false)
+                continue;
+            zone = region.maps[mapId];
+
+            var coord = [zone.continent_rect[0][0] + (zone.continent_rect[1][0] - zone.continent_rect[0][0]) / 2,
+                zone.continent_rect[0][1] + (zone.continent_rect[1][1] - zone.continent_rect[0][1]) / 2];
+            var zoneHtml = '<div><em>' + zone.name + '</em></div>';
+            if (zone.min_level > 0)
+                zoneHtml += '<div><em>(' + zone.min_level + ' - ' + zone.max_level + ')</em></div>';
+            var zoneIcon = L.divIcon({ html: zoneHtml, iconSize: [200, 32] });
+            zoneGroup.addLayer(L.marker(unproject(coord), { icon: zoneIcon, clickable: false, opacity: 0.7, zIndexOffset: -1000 }));
+        }
+    }
 }
 
 function ClearAllLayers() {
