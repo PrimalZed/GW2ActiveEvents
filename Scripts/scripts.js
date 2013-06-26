@@ -1,4 +1,4 @@
-﻿var eventsUri = "https://api.guildwars2.com/v1/events.json";
+var eventsUri = "https://api.guildwars2.com/v1/events.json";
 var worldNamesUri = "https://api.guildwars2.com/v1/world_names.json";
 var mapNamesUri = "https://api.guildwars2.com/v1/map_names.json";
 var mapTilesUri = "https://tiles.guildwars2.com/1/1/{z}/{x}/{y}.jpg";
@@ -37,13 +37,15 @@ function unproject(coord) { return map.unproject(coord, map.getMaxZoom()); }
 function project(latlng) { return map.project(latlng, map.getMaxZoom()); }
 
 $(document).ready(function () {
+    var lang = getURLParameter('lang') || 'en';
+
     // Load map data
-    $.getJSON(mapFloorUri, function (data) {
+    $.getJSON(mapFloorUri + '&lang=' + lang, function (data) {
         map_floor.regions = data.regions;
         map_floor.texture_dims = data.texture_dims;
         LoadMap(data.texture_dims);
     });
-    $.getJSON(mapNamesUri, function (data) {
+    $.getJSON(mapNamesUri + '?lang=' + lang, function (data) {
         map_names.a = data;
     });
 
@@ -75,7 +77,7 @@ $(document).ready(function () {
     });
 
     // Load event data
-    $.getJSON(eventDetailsUri, function (data) {
+    $.getJSON(eventDetailsUri + '?lang=' + lang, function (data) {
         events = $.extend(events, data.events);
     });
 
@@ -182,7 +184,7 @@ function PositionChanged(e) {
     // Load map points
     for (var i = 0; i < mapobj.points_of_interest.length; i++) {
         var point = mapobj.points_of_interest[i];
-        var wiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + point.name;
+        var wiki = getWikiUrl() + '/wiki/Special:Search/' + point.name;
         switch (point.type) {
             case "landmark":
                 poiGroup.addLayer(L.marker(unproject(point.coord), { title: point.name, icon: poiIcon })
@@ -203,7 +205,7 @@ function PositionChanged(e) {
     // Load hearts
     for (i = 0; i < mapobj.tasks.length; i++) {
         var task = mapobj.tasks[i];
-        var wiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + task.objective;
+        var wiki = getWikiUrl() + '/wiki/Special:Search/' + task.objective;
         if (wiki.substr(wiki.length - 1) == '.')
             wiki = wiki.substring(0, wiki.length - 1);
         var name = task.objective + " (" + task.level + ")";
@@ -312,7 +314,7 @@ function LoadEvents() {
             }
 
             // get wiki link
-            var eventWiki = 'http://wiki.guildwars2.com/wiki/Special:Search/' + eventName;
+            var eventWiki = getWikiUrl() + '/wiki/Special:Search/' + eventName;
             if (eventWiki.substr(eventWiki.length - 1) == '.')
                 eventWiki = eventWiki.substring(0, eventWiki.length - 1);
 
@@ -357,8 +359,18 @@ function UpdateAutoUrl() {
         $('#autoUrl').hide();
         return;
     }
-    var url = location.protocol + '//' + location.host + location.pathname + "?world_id=" + worldId;
+
+    var lang = getURLParameter('lang') || 'en';
+    var url = location.protocol + '//' + location.host + location.pathname + '?world_id=' + worldId + '&lang=' + lang;
     $('#autoUrl').attr('href', url).text(url).show();
+}
+
+function getWikiUrl() {
+    var lang = getURLParameter('lang');
+    var wiki = 'wiki';
+    if (lang != null)
+        wiki = 'wiki-' + lang;
+    return 'http://' + wiki + '.guildwars2.com';
 }
 
 function getURLParameter(name) {
