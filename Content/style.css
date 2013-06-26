@@ -1,12 +1,14 @@
-﻿body, html
+body, html
 {
     height: 98% !important;
 }
 #map
 {
-    min-height: 95%;
-    height: auto !important;
-    width: auto;
+    position: absolute;
+    top: 40px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
 }
 .leaflet-container {
     background: #000;
